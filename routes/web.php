@@ -1,7 +1,10 @@
 <?php
+use App\Http\Controllers\AuthController;
 
-use Illuminate\Support\Facades\Route;
-
+// Halaman Utama Publik (Sebelum Login)
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('landing');
+})->name('home');
+
+// Route Halaman Login
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
