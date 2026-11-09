@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
+
 // Halaman Utama Publik (Sebelum Login)
 Route::get('/', function () {
     return view('landing');
