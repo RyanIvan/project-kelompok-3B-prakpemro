@@ -22,16 +22,22 @@
         </div>
 
         <!-- Form Login -->
-        <form action="#" method="POST">
+        <form action="{{ route('login.store') }}" method="POST">
             @csrf
+
+            @if ($errors->any())
+                <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">
+                    {{ $errors->first() }}
+                </div>
+            @endif
 
             <!-- Pilihan Role (Opsional untuk simulasi multi-role) -->
             <div class="mb-4">
                 <label class="block text-xs font-semibold text-gray-600 uppercase mb-2">Login Sebagai</label>
                 <select name="role" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none text-sm bg-gray-50">
-                    <option value="mahasiswa">Mahasiswa</option>
-                    <option value="dosen">Dosen</option>
-                    <option value="admin">Administrator</option>
+                    <option value="mahasiswa" @selected(old('role') === 'mahasiswa')>Mahasiswa</option>
+                    <option value="dosen" @selected(old('role') === 'dosen')>Dosen</option>
+                    <option value="admin" @selected(old('role') === 'admin')>Administrator</option>
                 </select>
             </div>
 
@@ -42,7 +48,7 @@
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                         <i class="fa-solid fa-user"></i>
                     </span>
-                    <input type="text" name="identity" required placeholder="Masukkan NIM atau Email" 
+                    <input type="text" name="identity" value="{{ old('identity') }}" required placeholder="Masukkan NIM atau Email" 
                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none text-sm">
                 </div>
             </div>
