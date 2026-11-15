@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Dosen;
 use Illuminate\Support\Facades\Route;
 
 // Halaman Utama Publik (Sebelum Login)
@@ -46,7 +47,31 @@ Route::middleware(['auth', 'role:admin'])
     });
 
 // =====================================================================
-// DOSEN & MAHASISWA: dikerjakan anggota tim lain.
-// Beri nama route 'dosen.dashboard' dan 'mahasiswa.dashboard' agar
+// DOSEN (hanya user dengan role "dosen")
+// =====================================================================
+Route::middleware(['auth', 'role:dosen'])
+    ->prefix('dosen')
+    ->name('dosen.')
+    ->group(function () {
+        Route::get('/', [Dosen\DashboardController::class, 'index'])->name('dashboard');
+
+        // Jadwal Mengajar
+        Route::get('schedules', [Dosen\ScheduleController::class, 'index'])->name('schedules.index');
+
+        // Kelas yang Diampu & Validasi KRS
+        Route::get('classes', [Dosen\CourseClassController::class, 'index'])->name('classes.index');
+        Route::get('classes/{courseClass}', [Dosen\CourseClassController::class, 'show'])->name('classes.show');
+        Route::patch('enrollments/{enrollment}/status', [Dosen\CourseClassController::class, 'updateEnrollmentStatus'])
+            ->name('enrollments.update-status');
+
+        // Penilaian Mahasiswa
+        Route::get('grades', [Dosen\GradeController::class, 'index'])->name('grades.index');
+        Route::get('grades/classes/{courseClass}', [Dosen\GradeController::class, 'edit'])->name('grades.edit');
+        Route::post('grades/classes/{courseClass}', [Dosen\GradeController::class, 'update'])->name('grades.update');
+    });
+
+// =====================================================================
+// MAHASISWA: dikerjakan anggota tim lain.
+// Beri nama route 'mahasiswa.dashboard' agar
 // AuthController otomatis mengarahkan user ke sana setelah login.
 // =====================================================================
