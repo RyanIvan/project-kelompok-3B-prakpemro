@@ -22,7 +22,7 @@
         ['label' => 'Mata Kuliah', 'icon' => 'fa-book', 'route' => 'admin.courses.index', 'match' => 'admin.courses.*'],
         ['label' => 'Ruang', 'icon' => 'fa-door-open', 'route' => 'admin.rooms.index', 'match' => 'admin.rooms.*'],
         ['section' => 'Perkuliahan'],
-        ['label' => 'Kelas', 'icon' => 'fa-people-group', 'route' => 'admin.classes.index', 'match' => 'admin.classes.*'],
+        ['label' => 'Kelas', 'icon' => 'fa-chalkboard', 'route' => 'admin.classes.index', 'match' => 'admin.classes.*'],
         ['label' => 'Jadwal', 'icon' => 'fa-calendar-days', 'route' => 'admin.schedules.index', 'match' => 'admin.schedules.*'],
         ['label' => 'Monitoring KRS', 'icon' => 'fa-clipboard-check', 'route' => 'admin.enrollments.index', 'match' => 'admin.enrollments.*'],
     ];
