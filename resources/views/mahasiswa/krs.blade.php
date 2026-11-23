@@ -1,126 +1,34 @@
-
-@extends('mahasiswa.layout')
-
-@section('title', 'KRS Mahasiswa')
+@extends('layouts.app')
+@section('title', 'KRS Saya')
 
 @section('content')
+    <x-admin.page-header title="KRS Saya" subtitle="Daftar mata kuliah yang diajukan beserta status persetujuan dosen.">
+        <x-admin.btn-add :href="route('mahasiswa.katalog')" label="Ambil Mata Kuliah" />
+    </x-admin.page-header>
 
-<div class="mhs-heading">
-    <div>
-        <p class="mhs-eyebrow">KARTU RENCANA STUDI</p>
-        <h1>KRS Saya</h1>
-        <p>
-            Daftar mata kuliah yang telah diajukan
-            beserta status persetujuan dosen.
-        </p>
-    </div>
-
-    <a href="{{ route('mahasiswa.katalog') }}"
-       class="mhs-button">
-        + Ambil Mata Kuliah
-    </a>
-</div>
-
-<section class="mhs-panel">
-
-    <div class="mhs-panel-head">
-        <div>
-            <h2>Daftar Pengajuan KRS</h2>
-            <p>Riwayat pengambilan mata kuliah</p>
-        </div>
-    </div>
-
-    <div class="mhs-table-wrap">
-
-        <table class="mhs-table">
-
-            <thead>
-                <tr>
-                    <th>Mata Kuliah</th>
-                    <th>SKS</th>
-                    <th>Dosen</th>
-                    <th>Tahun Akademik</th>
-                    <th>Tanggal Pengajuan</th>
-                    <th>Status Validasi</th>
-                </tr>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 text-left text-xs text-gray-500 uppercase">
+                <tr><th class="px-4 py-3">Mata Kuliah</th><th>SKS</th><th>Dosen</th><th>Tahun Akademik</th><th>Diajukan</th><th>Status</th></tr>
             </thead>
-
             <tbody>
-
-            @forelse($enrollments as $item)
-
-                @php
-                    $status = strtolower((string) $item->status);
-                @endphp
-
-                <tr>
-                    <td>
-                        <strong>{{ $item->course_name }}</strong>
-                        <span class="mhs-muted">
-                            {{ $item->course_code }}
-                        </span>
-                    </td>
-
-                    <td>{{ $item->sks }}</td>
-
-                    <td>{{ $item->lecturer_name ?? '-' }}</td>
-
-                    <td>{{ $item->academic_year }}</td>
-
-                    <td>{{ $item->enrolled_at ?? '-' }}</td>
-
-                    <td>
-                        @if($status === 'pending')
-
-                            <span class="mhs-badge waiting">
-                                Menunggu Validasi
-                            </span>
-
-                        @elseif(in_array($status, [
-                            'approved', 'active', 'aktif',
-                            'validated', 'disetujui'
-                        ]))
-
-                            <span class="mhs-badge success">
-                                Disetujui
-                            </span>
-
-                        @elseif($status === 'rejected')
-
-                            <span class="mhs-badge neutral">
-                                Ditolak
-                            </span>
-
-                        @else
-
-                            <span class="mhs-badge neutral">
-                                {{ ucfirst($item->status) }}
-                            </span>
-
-                        @endif
-                    </td>
-
-                </tr>
-
-            @empty
-                <tr>
-                    <td colspan="6" class="mhs-empty">
-                        Belum ada mata kuliah yang diajukan.
-                    </td>
-                </tr>
-            @endforelse
-
+                @forelse ($enrollments as $item)
+                    <tr class="border-t">
+                        <td class="px-4 py-3">
+                            <p class="font-medium">{{ $item->course_name }}</p>
+                            <p class="text-xs text-gray-500 font-mono">{{ $item->course_code }}</p>
+                        </td>
+                        <td>{{ $item->sks }}</td>
+                        <td>{{ $item->lecturer_name ?? '-' }}</td>
+                        <td>{{ $item->academic_year }}</td>
+                        <td class="text-gray-500">{{ $item->enrolled_at ? \Illuminate\Support\Carbon::parse($item->enrolled_at)->format('d M Y') : '-' }}</td>
+                        <td><x-status-badge :status="$item->status" /></td>
+                    </tr>
+                @empty
+                    <tr><td colspan="6" class="px-4 py-8 text-center text-gray-400">Belum ada mata kuliah yang diajukan.</td></tr>
+                @endforelse
             </tbody>
-
         </table>
-
     </div>
-
-</section>
-
-<p class="mhs-help">
-    Mahasiswa tidak memiliki fitur pembatalan KRS.
-    Validasi pengajuan dilakukan melalui akun dosen.
-</p>
-
+    <p class="text-xs text-gray-500 mt-3">Validasi pengajuan dilakukan oleh dosen pengampu.</p>
 @endsection

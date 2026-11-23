@@ -34,7 +34,8 @@
                 </div>
 
                 <!-- Tombol Masuk / Login -->
-                <div>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('register') }}" class="hidden sm:inline text-sm font-medium hover:text-yellow-400 transition">Daftar</a>
                     <a href="{{ route('login') }}" class="bg-yellow-400 hover:bg-yellow-500 text-blue-950 font-semibold px-5 py-2.5 rounded-lg shadow transition duration-200 flex items-center gap-2">
                         <i class="fa-solid fa-right-to-bracket"></i>
                         <span>Masuk Portal</span>
@@ -56,12 +57,12 @@
             <p class="text-lg text-blue-100 max-w-2xl mx-auto mb-8 font-light">
                 Kemudahan akses pengisian KRS, pemantauan jadwal kuliah, nilai, dan rekapitulasi hasil studi bagi Mahasiswa dan Dosen dalam satu portal.
             </p>
-            <div class="flex justify-center gap-4">
+            <div class="flex flex-wrap justify-center gap-4">
                 <a href="{{ route('login') }}" class="bg-yellow-400 hover:bg-yellow-500 text-blue-950 font-bold px-8 py-3.5 rounded-lg shadow-lg transition">
                     Masuk ke SIAKAD
                 </a>
-                <a href="#berita" class="bg-blue-800 hover:bg-blue-700 border border-blue-600 text-white font-medium px-6 py-3.5 rounded-lg transition">
-                    Lihat Pengumuman
+                <a href="{{ route('register') }}" class="bg-blue-800 hover:bg-blue-700 border border-blue-600 text-white font-medium px-6 py-3.5 rounded-lg transition">
+                    Buat Akun Baru
                 </a>
             </div>
         </div>
@@ -70,7 +71,7 @@
     <!-- 3. SECTION LAYANAN UTAMA -->
     <section id="layanan" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900">Layanan Layanan Utama</h2>
+            <h2 class="text-3xl font-bold text-gray-900">Layanan Utama</h2>
             <p class="text-gray-600 mt-2">Akses cepat portal sesuai peran akademik Anda</p>
         </div>
 
@@ -87,6 +88,7 @@
                 <a href="{{ route('login') }}" class="text-blue-600 font-semibold text-sm hover:underline inline-flex items-center gap-1">
                     Akses Mahasiswa <i class="fa-solid fa-arrow-right text-xs"></i>
                 </a>
+                <a href="{{ route('register', ['role' => 'mahasiswa']) }}" class="text-gray-500 text-sm hover:underline ml-4">Daftar</a>
             </div>
 
             <!-- Card Portal Dosen -->
@@ -101,6 +103,7 @@
                 <a href="{{ route('login') }}" class="text-emerald-600 font-semibold text-sm hover:underline inline-flex items-center gap-1">
                     Akses Dosen <i class="fa-solid fa-arrow-right text-xs"></i>
                 </a>
+                <a href="{{ route('register', ['role' => 'dosen']) }}" class="text-gray-500 text-sm hover:underline ml-4">Daftar</a>
             </div>
 
             <!-- Card Portal Administrator -->
@@ -127,7 +130,6 @@
                     <h2 class="text-3xl font-bold text-gray-900">Pengumuman Terkini</h2>
                     <p class="text-gray-600 mt-1">Informasi penting seputar agenda perkuliahan dan KRS</p>
                 </div>
-                <a href="#" class="text-blue-900 font-semibold text-sm hover:underline hidden md:block">Lihat Semua Berita</a>
             </div>
 
             <div class="grid md:grid-cols-3 gap-6">
@@ -181,6 +183,39 @@
                         </div>
                     </div>
                 </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- PANDUAN KRS -->
+    <section id="panduan" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-gray-900">Panduan KRS</h2>
+            <p class="text-gray-600 mt-2">Empat langkah mengisi Kartu Rencana Studi</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @foreach ([
+                ['Buat akun & masuk', 'Daftar memakai NIM dan email, lalu masuk ke portal mahasiswa.'],
+                ['Pilih mata kuliah', 'Buka menu Mata Kuliah dan ajukan kelas yang tersedia.'],
+                ['Tunggu validasi dosen', 'Pengajuan berstatus Pending sampai disetujui dosen.'],
+                ['Lihat jadwal & nilai', 'Kelas yang disetujui muncul di jadwal; nilai tampil setelah diinput dosen.'],
+            ] as $i => [$title, $text])
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <div class="w-10 h-10 rounded-full bg-blue-900 text-yellow-400 font-bold flex items-center justify-center mb-3">{{ $i + 1 }}</div>
+                    <h3 class="font-bold text-gray-900 mb-1">{{ $title }}</h3>
+                    <p class="text-sm text-gray-600">{{ $text }}</p>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+    <!-- KONTAK -->
+    <section id="kontak" class="bg-gray-100 py-16">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold text-gray-900">Kontak</h2>
+            <p class="text-gray-600 mt-2 mb-6">Lupa kata sandi atau kendala akun? Hubungi Biro Administrasi Akademik (BAAK).</p>
+            <div class="inline-flex items-center gap-2 bg-white rounded-xl shadow-sm border border-gray-100 px-5 py-3 text-sm">
+                <i class="fa-solid fa-envelope text-blue-700"></i> admin@siakad.test
             </div>
         </div>
     </section>

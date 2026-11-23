@@ -1,92 +1,35 @@
-
-@extends('mahasiswa.layout')
-
-@section('title', 'Presensi Mahasiswa')
+@extends('layouts.app')
+@section('title', 'Presensi')
 
 @section('content')
+    <x-admin.page-header title="Riwayat Presensi" subtitle="Pantau kehadiran Anda dalam kegiatan perkuliahan." />
 
-<div class="mhs-heading">
-    <div>
-        <p class="mhs-eyebrow">KEHADIRAN MAHASISWA</p>
-        <h1>Riwayat Presensi</h1>
-        <p>
-            Pantau kehadiran mahasiswa dalam
-            kegiatan perkuliahan.
-        </p>
-    </div>
-</div>
-
-@if(!$presensiAvailable)
-
-    <div class="mhs-flash mhs-flash-danger">
-        Fitur presensi belum tersedia karena tabel
-        <strong>attendances</strong>
-        belum dibuat di database kelompok.
-    </div>
-
-@endif
-
-<section class="mhs-panel">
-
-    <div class="mhs-panel-head">
-        <div>
-            <h2>Daftar Kehadiran</h2>
-            <p>Riwayat presensi per mata kuliah</p>
+    @unless ($presensiAvailable)
+        <div class="mb-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm">
+            <i class="fa-solid fa-circle-info mr-1"></i> Fitur presensi belum diaktifkan pada sistem ini.
         </div>
-    </div>
+    @endunless
 
-    <div class="mhs-table-wrap">
-
-        <table class="mhs-table">
-
-            <thead>
-                <tr>
-                    <th>Mata Kuliah</th>
-                    <th>Pertemuan</th>
-                    <th>Tanggal</th>
-                    <th>Status Kehadiran</th>
-                </tr>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 text-left text-xs text-gray-500 uppercase">
+                <tr><th class="px-4 py-3">Mata Kuliah</th><th>Pertemuan</th><th>Tanggal</th><th>Status Kehadiran</th></tr>
             </thead>
-
             <tbody>
-
-            @forelse($attendances as $item)
-
-                <tr>
-                    <td>
-                        <strong>{{ $item->course_name }}</strong>
-                        <span class="mhs-muted">
-                            {{ $item->course_code }}
-                        </span>
-                    </td>
-
-                    <td>{{ $item->meeting_number }}</td>
-
-                    <td>{{ $item->meeting_date }}</td>
-
-                    <td>
-                        <span class="mhs-badge neutral">
-                            {{ $item->status }}
-                        </span>
-                    </td>
-                </tr>
-
-            @empty
-
-                <tr>
-                    <td colspan="4" class="mhs-empty">
-                        Belum ada data presensi mahasiswa.
-                    </td>
-                </tr>
-
-            @endforelse
-
+                @forelse ($attendances as $item)
+                    <tr class="border-t">
+                        <td class="px-4 py-3">
+                            <p class="font-medium">{{ $item->course_name }}</p>
+                            <p class="text-xs text-gray-500 font-mono">{{ $item->course_code }}</p>
+                        </td>
+                        <td>{{ $item->meeting_number }}</td>
+                        <td>{{ $item->meeting_date }}</td>
+                        <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">{{ $item->status }}</span></td>
+                    </tr>
+                @empty
+                    <tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">Belum ada data presensi.</td></tr>
+                @endforelse
             </tbody>
-
         </table>
-
     </div>
-
-</section>
-
 @endsection

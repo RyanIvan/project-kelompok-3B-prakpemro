@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Dosen;
 use Illuminate\Support\Facades\Route;
@@ -13,7 +14,15 @@ Route::get('/', function () {
 // Autentikasi
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->name('login.store')->middleware('guest');
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register')->middleware('guest');
+Route::post('/register', [AuthController::class, 'register'])->name('register.store')->middleware('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Ganti kata sandi sendiri (semua peran)
+Route::middleware('auth')->group(function () {
+    Route::get('/akun/password', [AccountController::class, 'editPassword'])->name('account.password');
+    Route::put('/akun/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
+});
 
 // =====================================================================
 // ADMIN  (hanya user dengan role "admin")
@@ -44,6 +53,11 @@ Route::middleware(['auth', 'role:admin'])
 
         // Monitoring KRS (read-only)
         Route::get('enrollments', [Admin\EnrollmentController::class, 'index'])->name('enrollments.index');
+
+        // Pemantauan akun & kata sandi pengguna
+        Route::get('accounts', [Admin\UserAccountController::class, 'index'])->name('accounts.index');
+        Route::patch('accounts/{user}/toggle-active', [Admin\UserAccountController::class, 'toggleActive'])->name('accounts.toggle-active');
+        Route::post('accounts/{user}/reset-password', [Admin\UserAccountController::class, 'resetPassword'])->name('accounts.reset-password');
     });
 
 // =====================================================================

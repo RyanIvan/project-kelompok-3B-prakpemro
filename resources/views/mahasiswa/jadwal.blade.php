@@ -1,83 +1,30 @@
-
-@extends('mahasiswa.layout')
-
+@extends('layouts.app')
 @section('title', 'Jadwal Kuliah')
 
 @section('content')
+    <x-admin.page-header title="Jadwal Kuliah" subtitle="Jadwal mata kuliah yang sudah disetujui dosen." />
 
-<div class="mhs-heading">
-    <div>
-        <p class="mhs-eyebrow">AGENDA AKADEMIK</p>
-        <h1>Jadwal Kuliah</h1>
-        <p>
-            Jadwal mata kuliah yang sudah mendapat
-            persetujuan dosen.
-        </p>
-    </div>
-</div>
-
-<section class="mhs-panel">
-
-    <div class="mhs-panel-head">
-        <div>
-            <h2>Jadwal Perkuliahan</h2>
-            <p>Informasi kelas dan ruang kuliah</p>
-        </div>
-    </div>
-
-    <div class="mhs-table-wrap">
-        <table class="mhs-table">
-
-            <thead>
-                <tr>
-                    <th>Hari</th>
-                    <th>Jam</th>
-                    <th>Mata Kuliah</th>
-                    <th>Ruangan</th>
-                    <th>Tahun Akademik</th>
-                </tr>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 text-left text-xs text-gray-500 uppercase">
+                <tr><th class="px-4 py-3">Hari</th><th>Jam</th><th>Mata Kuliah</th><th>Ruangan</th><th>Tahun Akademik</th></tr>
             </thead>
-
             <tbody>
-            @forelse($schedules as $item)
-
-                <tr>
-                    <td>
-                        <strong>{{ $item->day }}</strong>
-                    </td>
-
-                    <td>
-                        {{ $item->start_time }}
-                        -
-                        {{ $item->end_time }}
-                    </td>
-
-                    <td>
-                        <strong>{{ $item->course_name }}</strong>
-                        <span class="mhs-muted">
-                            {{ $item->course_code }}
-                        </span>
-                    </td>
-
-                    <td>
-                        {{ $item->room_name ?? $item->room_code ?? '-' }}
-                    </td>
-
-                    <td>{{ $item->academic_year }}</td>
-                </tr>
-
-            @empty
-                <tr>
-                    <td colspan="5" class="mhs-empty">
-                        Belum ada jadwal perkuliahan yang disetujui.
-                    </td>
-                </tr>
-            @endforelse
+                @forelse ($schedules as $item)
+                    <tr class="border-t">
+                        <td class="px-4 py-3 font-semibold">{{ $item->day }}</td>
+                        <td class="font-mono text-xs">{{ $item->start_time }} - {{ $item->end_time }}</td>
+                        <td>
+                            <p class="font-medium">{{ $item->course_name }}</p>
+                            <p class="text-xs text-gray-500 font-mono">{{ $item->course_code }}</p>
+                        </td>
+                        <td>{{ $item->room_name ?? $item->room_code ?? '-' }}</td>
+                        <td>{{ $item->academic_year }}</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">Belum ada jadwal perkuliahan yang disetujui.</td></tr>
+                @endforelse
             </tbody>
-
         </table>
     </div>
-
-</section>
-
 @endsection

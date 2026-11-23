@@ -121,7 +121,8 @@ class MahasiswaController extends Controller
                 'co.semester',
                 'u.name as lecturer_name',
                 'e.id as my_enrollment_id',
-                'e.status as my_status'
+                'e.status as my_status',
+                DB::raw("(select count(*) from enrollments x where x.class_id = c.id and x.status != 'Rejected') as filled")
             )
             ->orderByDesc('c.academic_year')
             ->orderBy('co.name')
@@ -191,6 +192,18 @@ class MahasiswaController extends Controller
                 ]);
             }
 
+            // Kelas yang sudah penuh tidak bisa diambil (pengajuan ditolak tidak dihitung)
+            $terisi = DB::table('enrollments')
+                ->where('class_id', $class->id)
+                ->where('status', '!=', 'Rejected')
+                ->count();
+
+            if ($class->capacity !== null && $terisi >= $class->capacity) {
+                throw ValidationException::withMessages([
+                    'class_id' => 'Kelas ini sudah penuh.',
+                ]);
+            }
+
             // Simpan pengajuan ke database
             DB::table('enrollments')->insert([
                 'student_id' => $student->id,
@@ -244,7 +257,7 @@ class MahasiswaController extends Controller
                 'r.code as room_code',
                 'r.name as room_name'
             )
-            ->orderBy('s.day')
+            ->orderByRaw("CASE s.day WHEN 'Senin' THEN 1 WHEN 'Selasa' THEN 2 WHEN 'Rabu' THEN 3 WHEN 'Kamis' THEN 4 WHEN 'Jumat' THEN 5 WHEN 'Sabtu' THEN 6 ELSE 7 END")
             ->orderBy('s.start_time')
             ->get();
 
@@ -252,78 +265,41 @@ class MahasiswaController extends Controller
     }
 
     // 6. NILAI MAHASISWA
-    
-public function nilai(): View
-{
-    $student = $this->student();
+    public function nilai(): View
+    {
+        $student = $this->student();
 
-    // Membaca nama kolom asli pada tabel grades
-    $columns = Schema::getColumnListing('grades');
+        $grades = DB::table('enrollments as e')
+            ->join('classes as c', 'c.id', '=', 'e.class_id')
+            ->join('courses as co', 'co.id', '=', 'c.course_id')
+            ->leftJoin('grades as g', 'g.enrollment_id', '=', 'e.id')
+            ->where('e.student_id', $student->id)
+            ->where('e.status', 'Approved')
+            ->select(
+                'co.code as course_code',
+                'co.name as course_name',
+                'c.academic_year',
+                'co.sks',
+                'g.assignment_score',
+                'g.mid_score',
+                'g.final_score',
+                'g.final_grade',
+                'g.grade_letter'
+            )
+            ->orderByDesc('c.academic_year')
+            ->orderBy('co.name')
+            ->get();
 
-    // Memilih kolom yang tersedia agar tidak terjadi SQL error
-    $field = static function (array $names, string $alias) use ($columns) {
-        foreach ($names as $name) {
-            if (in_array($name, $columns, true)) {
-                return DB::raw("g.{$name} as {$alias}");
-            }
-        }
+        // IPK sederhana dari mata kuliah yang sudah bernilai huruf.
+        $points = ['A' => 4.0, 'A-' => 3.75, 'B+' => 3.5, 'B' => 3.0, 'C+' => 2.5, 'C' => 2.0, 'D' => 1.0, 'E' => 0.0];
+        $graded = $grades->filter(fn ($g) => $g->grade_letter !== null && isset($points[$g->grade_letter]));
+        $totalSks = $graded->sum('sks');
+        $ipk = $totalSks > 0
+            ? round($graded->sum(fn ($g) => $points[$g->grade_letter] * $g->sks) / $totalSks, 2)
+            : null;
 
-        return DB::raw("NULL as {$alias}");
-    };
-
-    $grades = DB::table('enrollments as e')
-        ->join('classes as c', 'c.id', '=', 'e.class_id')
-        ->join('courses as co', 'co.id', '=', 'c.course_id')
-        ->leftJoin('grades as g', 'g.enrollment_id', '=', 'e.id')
-        ->where('e.student_id', $student->id)
-        ->where('e.status', 'Approved')
-        ->select(
-            'co.code as course_code',
-            'co.name as course_name',
-            'c.academic_year',
-            'co.sks',
-
-            $field([
-                'assignment_score',
-                'tugas_score',
-                'task_score',
-                'nilai_tugas'
-            ], 'assignment_score'),
-
-            $field([
-                'mid_exam_score',
-                'midterm_score',
-                'midterm_exam_score',
-                'uts_score',
-                'nilai_uts'
-            ], 'mid_exam_score'),
-
-            $field([
-                'final_exam_score',
-                'uas_score',
-                'nilai_uas'
-            ], 'final_exam_score'),
-
-            $field([
-                'final_score',
-                'total_score',
-                'nilai_akhir'
-            ], 'final_score'),
-
-            $field([
-                'grade_letter',
-                'letter_grade',
-                'grade',
-                'nilai_huruf'
-            ], 'grade_letter')
-        )
-        ->orderByDesc('c.academic_year')
-        ->orderBy('co.name')
-        ->get();
-
-    return view('mahasiswa.nilai', compact('student', 'grades'));
-}
-
+        return view('mahasiswa.nilai', compact('student', 'grades', 'ipk', 'totalSks'));
+    }
 
     // 7. PRESENSI MAHASISWA
     public function presensi(): View
