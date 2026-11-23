@@ -1,0 +1,362 @@
+<?php
+
+namespace App\Http\Controllers\Mahasiswa;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
+
+class MahasiswaController extends Controller
+{
+    private const APPROVED_STATUSES = [
+        'approved', 'active', 'aktif', 'validated', 'disetujui'
+    ];
+
+    private const HISTORY_STATUSES = [
+        'approved', 'active', 'aktif', 'validated',
+        'disetujui', 'inactive', 'nonaktif', 'non-aktif'
+    ];
+
+    // Mengambil identitas mahasiswa yang sedang login
+    private function student(): object
+    {
+        abort_unless(
+            Auth::user()?->role === 'mahasiswa',
+            403,
+            'Halaman ini hanya untuk mahasiswa.'
+        );
+
+        $student = DB::table('students')
+            ->where('user_id', Auth::id())
+            ->first();
+
+        abort_unless(
+            $student,
+            403,
+            'Akun ini tidak terdaftar sebagai mahasiswa.'
+        );
+
+        return $student;
+    }
+
+    // Mengambil riwayat KRS mahasiswa
+    private function myEnrollments(int $studentId)
+    {
+        return DB::table('enrollments as e')
+            ->join('classes as c', 'c.id', '=', 'e.class_id')
+            ->join('courses as co', 'co.id', '=', 'c.course_id')
+            ->leftJoin('lecturers as l', 'l.id', '=', 'c.lecturer_id')
+            ->leftJoin('users as u', 'u.id', '=', 'l.user_id')
+            ->where('e.student_id', $studentId)
+            ->select(
+                'e.id as enrollment_id',
+                'e.status',
+                'e.created_at as enrolled_at',
+                'c.id as class_id',
+                'c.academic_year',
+                'c.capacity',
+                'co.id as course_id',
+                'co.code as course_code',
+                'co.name as course_name',
+                'co.sks',
+                'co.semester',
+                'u.name as lecturer_name'
+            );
+    }
+
+    // 1. DASHBOARD
+    public function dashboard(): View
+    {
+        $student = $this->student();
+
+        $enrollments = $this->myEnrollments($student->id)
+            ->orderByDesc('e.created_at')
+            ->get();
+
+        $approved = $enrollments->filter(
+            fn ($item) => in_array(
+                strtolower((string) $item->status),
+                self::APPROVED_STATUSES,
+                true
+            )
+        );
+
+        return view('mahasiswa.dashboard', [
+            'student' => $student,
+            'recent' => $enrollments->take(5),
+            'totalApplied' => $enrollments->count(),
+            'totalApproved' => $approved->count(),
+            'totalPending' => $enrollments->filter(
+                fn ($item) => strtolower((string) $item->status) === 'pending'
+            )->count(),
+            'totalSks' => $approved->sum('sks'),
+        ]);
+    }
+
+    // 2. DAFTAR MATA KULIAH
+    public function katalog(): View
+    {
+        $student = $this->student();
+
+        $classes = DB::table('classes as c')
+            ->join('courses as co', 'co.id', '=', 'c.course_id')
+            ->leftJoin('lecturers as l', 'l.id', '=', 'c.lecturer_id')
+            ->leftJoin('users as u', 'u.id', '=', 'l.user_id')
+            ->leftJoin('enrollments as e', function ($join) use ($student) {
+                $join->on('e.class_id', '=', 'c.id')
+                     ->where('e.student_id', '=', $student->id);
+            })
+            ->select(
+                'c.id as class_id',
+                'c.academic_year',
+                'c.capacity',
+                'co.code as course_code',
+                'co.name as course_name',
+                'co.sks',
+                'co.semester',
+                'u.name as lecturer_name',
+                'e.id as my_enrollment_id',
+                'e.status as my_status'
+            )
+            ->orderByDesc('c.academic_year')
+            ->orderBy('co.name')
+            ->get();
+
+        return view('mahasiswa.katalog', compact('student', 'classes'));
+    }
+
+    // 3. MENGAMBIL MATA KULIAH
+    public function ambil(Request $request): RedirectResponse
+    {
+        $student = $this->student();
+
+        $validated = $request->validate([
+            'class_id' => ['required', 'integer', 'exists:classes,id'],
+        ]);
+
+        // Mahasiswa nonaktif tidak dapat mengajukan KRS
+        if (strtolower((string) ($student->status ?? '')) !== 'aktif') {
+            throw ValidationException::withMessages([
+                'class_id' => 'Status mahasiswa tidak aktif. Hubungi admin.',
+            ]);
+        }
+
+        DB::transaction(function () use ($student, $validated): void {
+
+            $class = DB::table('classes')
+                ->where('id', $validated['class_id'])
+                ->first();
+
+            if (!$class) {
+                throw ValidationException::withMessages([
+                    'class_id' => 'Kelas tidak ditemukan.',
+                ]);
+            }
+
+            // Mencegah kelas yang sama diambil dua kali
+            $sameClass = DB::table('enrollments')
+                ->where('student_id', $student->id)
+                ->where('class_id', $class->id)
+                ->exists();
+
+            if ($sameClass) {
+                throw ValidationException::withMessages([
+                    'class_id' => 'Kelas ini sudah pernah kamu ajukan.',
+                ]);
+            }
+
+            // Mencegah dua kelas untuk mata kuliah dan tahun yang sama
+            $sameCourse = DB::table('enrollments as e')
+                ->join('classes as c', 'c.id', '=', 'e.class_id')
+                ->where('e.student_id', $student->id)
+                ->where('c.course_id', $class->course_id)
+                ->where('c.academic_year', $class->academic_year)
+                ->exists();
+
+            if ($sameCourse) {
+                throw ValidationException::withMessages([
+                    'class_id' => 'Mata kuliah ini sudah diajukan pada tahun akademik yang sama.',
+                ]);
+            }
+
+            // Validasi tahun akademik
+            if (blank($class->academic_year)) {
+                throw ValidationException::withMessages([
+                    'class_id' => 'Tahun akademik kelas belum ditentukan.',
+                ]);
+            }
+
+            // Simpan pengajuan ke database
+            DB::table('enrollments')->insert([
+                'student_id' => $student->id,
+                'class_id' => $class->id,
+                'academic_year' => $class->academic_year,
+                'status' => 'Pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
+
+        return redirect()
+            ->route('mahasiswa.krs')
+            ->with(
+                'success',
+                'Mata kuliah berhasil diajukan. Menunggu validasi dosen.'
+            );
+    }
+
+    // 4. KRS MAHASISWA
+    public function krs(): View
+    {
+        $student = $this->student();
+
+        $enrollments = $this->myEnrollments($student->id)
+            ->orderByDesc('e.created_at')
+            ->get();
+
+        return view('mahasiswa.krs', compact('student', 'enrollments'));
+    }
+
+    // 5. JADWAL KULIAH
+    public function jadwal(): View
+    {
+        $student = $this->student();
+
+        $schedules = DB::table('enrollments as e')
+            ->join('classes as c', 'c.id', '=', 'e.class_id')
+            ->join('courses as co', 'co.id', '=', 'c.course_id')
+            ->join('schedules as s', 's.class_id', '=', 'c.id')
+            ->leftJoin('rooms as r', 'r.id', '=', 's.room_id')
+            ->where('e.student_id', $student->id)
+            ->where('e.status', 'Approved')
+            ->select(
+                'co.code as course_code',
+                'co.name as course_name',
+                'c.academic_year',
+                's.day',
+                's.start_time',
+                's.end_time',
+                'r.code as room_code',
+                'r.name as room_name'
+            )
+            ->orderBy('s.day')
+            ->orderBy('s.start_time')
+            ->get();
+
+        return view('mahasiswa.jadwal', compact('student', 'schedules'));
+    }
+
+    // 6. NILAI MAHASISWA
+    
+public function nilai(): View
+{
+    $student = $this->student();
+
+    // Membaca nama kolom asli pada tabel grades
+    $columns = Schema::getColumnListing('grades');
+
+    // Memilih kolom yang tersedia agar tidak terjadi SQL error
+    $field = static function (array $names, string $alias) use ($columns) {
+        foreach ($names as $name) {
+            if (in_array($name, $columns, true)) {
+                return DB::raw("g.{$name} as {$alias}");
+            }
+        }
+
+        return DB::raw("NULL as {$alias}");
+    };
+
+    $grades = DB::table('enrollments as e')
+        ->join('classes as c', 'c.id', '=', 'e.class_id')
+        ->join('courses as co', 'co.id', '=', 'c.course_id')
+        ->leftJoin('grades as g', 'g.enrollment_id', '=', 'e.id')
+        ->where('e.student_id', $student->id)
+        ->where('e.status', 'Approved')
+        ->select(
+            'co.code as course_code',
+            'co.name as course_name',
+            'c.academic_year',
+            'co.sks',
+
+            $field([
+                'assignment_score',
+                'tugas_score',
+                'task_score',
+                'nilai_tugas'
+            ], 'assignment_score'),
+
+            $field([
+                'mid_exam_score',
+                'midterm_score',
+                'midterm_exam_score',
+                'uts_score',
+                'nilai_uts'
+            ], 'mid_exam_score'),
+
+            $field([
+                'final_exam_score',
+                'uas_score',
+                'nilai_uas'
+            ], 'final_exam_score'),
+
+            $field([
+                'final_score',
+                'total_score',
+                'nilai_akhir'
+            ], 'final_score'),
+
+            $field([
+                'grade_letter',
+                'letter_grade',
+                'grade',
+                'nilai_huruf'
+            ], 'grade_letter')
+        )
+        ->orderByDesc('c.academic_year')
+        ->orderBy('co.name')
+        ->get();
+
+    return view('mahasiswa.nilai', compact('student', 'grades'));
+}
+
+
+    // 7. PRESENSI MAHASISWA
+    public function presensi(): View
+    {
+        $student = $this->student();
+
+        // Presensi belum tersedia dalam migration kelompok
+        $presensiAvailable = Schema::hasTable('attendances');
+
+        if (!$presensiAvailable) {
+            $attendances = collect();
+        } else {
+            $attendances = DB::table('enrollments as e')
+                ->join('classes as c', 'c.id', '=', 'e.class_id')
+                ->join('courses as co', 'co.id', '=', 'c.course_id')
+                ->join('attendances as a', 'a.enrollment_id', '=', 'e.id')
+                ->where('e.student_id', $student->id)
+                ->whereIn('e.status', self::HISTORY_STATUSES)
+                ->select(
+                    'co.code as course_code',
+                    'co.name as course_name',
+                    'a.meeting_number',
+                    'a.meeting_date',
+                    'a.status'
+                )
+                ->orderByDesc('a.meeting_date')
+                ->get();
+        }
+
+        return view('mahasiswa.presensi', compact(
+            'student',
+            'attendances',
+            'presensiAvailable'
+        ));
+    }
+}
