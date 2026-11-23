@@ -75,3 +75,5 @@ Route::middleware(['auth', 'role:dosen'])
 // Beri nama route 'mahasiswa.dashboard' agar
 // AuthController otomatis mengarahkan user ke sana setelah login.
 // =====================================================================
+
+require __DIR__ . '/mahasiswa.php';
