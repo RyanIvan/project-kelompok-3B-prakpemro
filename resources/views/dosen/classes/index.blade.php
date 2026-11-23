@@ -14,11 +14,11 @@
         <form method="GET" action="{{ route('dosen.classes.index') }}" class="flex flex-wrap items-center gap-2">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari mata kuliah..." class="text-xs pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm w-48 sm:w-60">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari mata kuliah..." class="text-xs pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm w-48 sm:w-60">
             </div>
 
             @if ($academicYears->isNotEmpty())
-                <select name="academic_year" onchange="this.form.submit()" class="text-xs bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                <select name="academic_year" onchange="this.form.submit()" class="text-xs bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm">
                     <option value="">-- Semua Tahun Ajaran --</option>
                     @foreach ($academicYears as $year)
                         <option value="{{ $year }}" {{ request('academic_year') === $year ? 'selected' : '' }}>{{ $year }}</option>
@@ -26,7 +26,7 @@
                 </select>
             @endif
 
-            <button type="submit" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-semibold transition shadow-sm">
+            <button type="submit" class="text-xs bg-blue-900 hover:bg-blue-800 text-white px-3 py-2 rounded-lg font-semibold transition shadow-sm">
                 Filter
             </button>
 
@@ -53,13 +53,13 @@
                 @php
                     $percent = $item->capacity > 0 ? min(100, round(($item->approved_count / $item->capacity) * 100)) : 0;
                 @endphp
-                <div class="bg-white rounded-2xl border border-slate-200 hover:border-emerald-300 shadow-sm hover:shadow-md transition flex flex-col justify-between overflow-hidden">
+                <div class="bg-white rounded-2xl border border-slate-200 hover:border-blue-300 shadow-sm hover:shadow-md transition flex flex-col justify-between overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-start justify-between gap-3 mb-2">
                             <span class="text-[11px] font-mono px-2 py-0.5 bg-slate-100 text-slate-600 rounded font-semibold">
                                 {{ $item->course?->code ?? '-' }}
                             </span>
-                            <span class="text-xs px-2.5 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full">
+                            <span class="text-xs px-2.5 py-0.5 bg-blue-100 text-blue-900 font-bold rounded-full">
                                 Kelas {{ $item->name }}
                             </span>
                         </div>
@@ -75,7 +75,7 @@
                         <!-- Jadwal -->
                         <div class="text-xs text-slate-600 bg-slate-50 rounded-xl p-3 border border-slate-100 mb-4 space-y-1">
                             <div class="font-semibold text-slate-700 flex items-center gap-1.5 mb-1 text-[11px] uppercase tracking-wider">
-                                <i class="fa-regular fa-calendar-days text-emerald-600"></i> Jadwal Kuliah:
+                                <i class="fa-regular fa-calendar-days text-blue-600"></i> Jadwal Kuliah:
                             </div>
                             @forelse ($item->schedules as $sched)
                                 <div class="flex items-center justify-between text-xs">
@@ -94,7 +94,7 @@
                                 <span class="font-bold text-slate-800">{{ $item->approved_count }} / {{ $item->capacity }}</span>
                             </div>
                             <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                                <div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" style="width: {{ $percent }}%"></div>
+                                <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: {{ $percent }}%"></div>
                             </div>
                         </div>
 
@@ -107,10 +107,10 @@
                     </div>
 
                     <div class="p-4 bg-slate-50/70 border-t border-slate-100 grid grid-cols-2 gap-2">
-                        <a href="{{ route('dosen.classes.show', $item) }}" class="text-xs bg-white hover:bg-teal-50 text-teal-800 font-semibold py-2 px-3 rounded-lg border border-teal-200 text-center transition shadow-sm inline-flex items-center justify-center gap-1.5">
+                        <a href="{{ route('dosen.classes.show', $item) }}" class="text-xs bg-white hover:bg-blue-50 text-blue-900 font-semibold py-2 px-3 rounded-lg border border-blue-200 text-center transition shadow-sm inline-flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-users"></i> Mahasiswa
                         </a>
-                        <a href="{{ route('dosen.grades.edit', $item) }}" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3 rounded-lg text-center transition shadow-sm inline-flex items-center justify-center gap-1.5">
+                        <a href="{{ route('dosen.grades.edit', $item) }}" class="text-xs bg-blue-900 hover:bg-blue-800 text-white font-semibold py-2 px-3 rounded-lg text-center transition shadow-sm inline-flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-star"></i> Input Nilai
                         </a>
                     </div>

@@ -13,10 +13,10 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
                 <div class="flex items-center gap-2 mb-2">
-                    <span class="text-xs font-mono font-bold px-2.5 py-0.5 bg-teal-100 text-teal-800 rounded">
+                    <span class="text-xs font-mono font-bold px-2.5 py-0.5 bg-blue-100 text-blue-900 rounded">
                         {{ $courseClass->course?->code ?? '-' }}
                     </span>
-                    <span class="text-xs font-bold px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full">
+                    <span class="text-xs font-bold px-2.5 py-0.5 bg-indigo-100 text-indigo-900 rounded-full">
                         Kelas {{ $courseClass->name }}
                     </span>
                     <span class="text-xs text-slate-500">
@@ -29,8 +29,8 @@
                 </p>
             </div>
 
-            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-900">
-                <p class="font-bold flex items-center gap-1.5 mb-1 text-emerald-800">
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3.5 text-xs text-blue-900">
+                <p class="font-bold flex items-center gap-1.5 mb-1 text-blue-800">
                     <i class="fa-solid fa-circle-info"></i> Formula Bobot Penilaian:
                 </p>
                 <p class="text-[11px] leading-relaxed">
@@ -51,7 +51,7 @@
                 Hanya mahasiswa dengan status KRS "Disetujui" yang dapat diinput nilainya. Silakan validasi mahasiswa terlebih dahulu di menu Kelas Saya.
             </p>
             <div class="mt-5">
-                <a href="{{ route('dosen.classes.show', $courseClass) }}" class="text-xs bg-teal-800 hover:bg-teal-900 text-white font-semibold px-4 py-2.5 rounded-xl transition inline-flex items-center gap-1.5 shadow-sm">
+                <a href="{{ route('dosen.classes.show', $courseClass) }}" class="text-xs bg-blue-900 hover:bg-blue-800 text-white font-semibold px-4 py-2.5 rounded-xl transition inline-flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-users-gear"></i> Kelola Validasi KRS
                 </a>
             </div>
@@ -93,21 +93,21 @@
                                                name="grades[{{ $enrollment->id }}][assignment_score]"
                                                value="{{ old("grades.{$enrollment->id}.assignment_score", $grade?->assignment_score) }}"
                                                placeholder="0-100"
-                                               class="score-input input-assignment w-28 text-center text-sm font-semibold border border-slate-300 rounded-lg py-1.5 px-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                                               class="score-input input-assignment w-28 text-center text-sm font-semibold border border-slate-300 rounded-lg py-1.5 px-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white">
                                     </td>
                                     <td class="px-5 py-3 text-center">
                                         <input type="number" step="0.01" min="0" max="100"
                                                name="grades[{{ $enrollment->id }}][mid_score]"
                                                value="{{ old("grades.{$enrollment->id}.mid_score", $grade?->mid_score) }}"
                                                placeholder="0-100"
-                                               class="score-input input-mid w-28 text-center text-sm font-semibold border border-slate-300 rounded-lg py-1.5 px-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                                               class="score-input input-mid w-28 text-center text-sm font-semibold border border-slate-300 rounded-lg py-1.5 px-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white">
                                     </td>
                                     <td class="px-5 py-3 text-center">
                                         <input type="number" step="0.01" min="0" max="100"
                                                name="grades[{{ $enrollment->id }}][final_score]"
                                                value="{{ old("grades.{$enrollment->id}.final_score", $grade?->final_score) }}"
                                                placeholder="0-100"
-                                               class="score-input input-final w-28 text-center text-sm font-semibold border border-slate-300 rounded-lg py-1.5 px-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                                               class="score-input input-final w-28 text-center text-sm font-semibold border border-slate-300 rounded-lg py-1.5 px-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white">
                                     </td>
                                     <td class="px-5 py-3 text-center">
                                         <span class="final-score-display text-sm font-bold text-slate-800">
@@ -115,7 +115,7 @@
                                         </span>
                                     </td>
                                     <td class="px-5 py-3 text-center">
-                                        <span class="grade-letter-display inline-block text-xs font-bold px-2 py-0.5 rounded {{ $grade?->grade_letter ? 'bg-emerald-100 text-emerald-800' : 'text-slate-400' }}">
+                                        <span class="grade-letter-display inline-block text-xs font-bold px-2 py-0.5 rounded {{ $grade?->grade_letter ? 'bg-blue-100 text-blue-800' : 'text-slate-400' }}">
                                             {{ $grade?->grade_letter ?? '-' }}
                                         </span>
                                     </td>
@@ -133,7 +133,7 @@
                         <a href="{{ route('dosen.grades.index') }}" class="text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition">
                             Batal
                         </a>
-                        <button type="submit" class="text-xs font-bold px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition inline-flex items-center gap-2">
+                        <button type="submit" class="text-xs font-bold px-6 py-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white shadow-sm transition inline-flex items-center gap-2">
                             <i class="fa-solid fa-floppy-disk"></i> Simpan Nilai Mahasiswa
                         </button>
                     </div>
@@ -186,7 +186,7 @@
 
                         finalDisplay.textContent = finalScore.toFixed(2);
                         letterDisplay.textContent = letter;
-                        letterDisplay.className = 'grade-letter-display inline-block text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800';
+                        letterDisplay.className = 'grade-letter-display inline-block text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800';
                     }
 
                     [assignInput, midInput, finalInput].forEach(inp => {

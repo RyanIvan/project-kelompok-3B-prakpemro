@@ -12,7 +12,7 @@
         </div>
 
         <form method="GET" action="{{ route('dosen.schedules.index') }}" class="flex flex-wrap items-center gap-2">
-            <select name="day" onchange="this.form.submit()" class="text-xs bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+            <select name="day" onchange="this.form.submit()" class="text-xs bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm">
                 <option value="">-- Semua Hari --</option>
                 @foreach ($days as $dayOption)
                     <option value="{{ $dayOption }}" {{ request('day') === $dayOption ? 'selected' : '' }}>{{ $dayOption }}</option>
@@ -20,7 +20,7 @@
             </select>
 
             @if ($academicYears->isNotEmpty())
-                <select name="academic_year" onchange="this.form.submit()" class="text-xs bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                <select name="academic_year" onchange="this.form.submit()" class="text-xs bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm">
                     <option value="">-- Semua Tahun Ajaran --</option>
                     @foreach ($academicYears as $year)
                         <option value="{{ $year }}" {{ request('academic_year') === $year ? 'selected' : '' }}>{{ $year }}</option>
@@ -65,7 +65,7 @@
                             <tr class="hover:bg-slate-50/80 transition">
                                 <td class="px-5 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-2.5">
-                                        <span class="inline-block px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-md font-bold text-xs border border-emerald-200">
+                                        <span class="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md font-bold text-xs border border-blue-200">
                                             {{ $schedule->day }}
                                         </span>
                                         <span class="text-xs font-semibold text-slate-800">
@@ -95,7 +95,7 @@
                                     {{ $schedule->courseClass?->academic_year ?? '-' }}
                                 </td>
                                 <td class="px-5 py-4 text-center whitespace-nowrap">
-                                    <a href="{{ route('dosen.classes.show', $schedule->courseClass) }}" class="inline-flex items-center gap-1.5 text-xs bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold px-3 py-1.5 rounded-lg border border-teal-200 transition">
+                                    <a href="{{ route('dosen.classes.show', $schedule->courseClass) }}" class="inline-flex items-center gap-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold px-3 py-1.5 rounded-lg border border-blue-200 transition">
                                         <i class="fa-solid fa-users"></i> Kelola Kelas
                                     </a>
                                 </td>

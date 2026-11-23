@@ -5,29 +5,29 @@
 @section('content')
 <div class="space-y-6">
     <!-- WELCOME CARD -->
-    <div class="bg-gradient-to-r from-teal-800 to-emerald-700 text-white rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-            <span class="inline-block px-3 py-1 bg-teal-950/40 text-emerald-200 text-xs font-semibold rounded-full mb-3">
+            <span class="inline-block px-3 py-1 bg-yellow-400 text-blue-950 text-xs font-bold rounded-full mb-3 shadow-sm">
                 <i class="fa-solid fa-id-badge mr-1"></i> SIAKAD Portal Dosen
             </span>
             <h2 class="text-2xl font-bold leading-tight">Selamat Datang, {{ auth()->user()->name }}</h2>
-            <p class="text-teal-100 text-sm mt-1">Kelola jadwal perkuliahan, persetujuan KRS mahasiswa, dan input nilai dengan mudah.</p>
+            <p class="text-blue-100 text-sm mt-1">Kelola jadwal perkuliahan, persetujuan KRS mahasiswa, dan input nilai dengan mudah.</p>
         </div>
         <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 text-xs space-y-1.5 min-w-[240px]">
             <div class="flex justify-between">
-                <span class="text-teal-200">NIP:</span>
+                <span class="text-blue-200">NIP:</span>
                 <span class="font-semibold">{{ $lecturer->nip ?? '-' }}</span>
             </div>
             <div class="flex justify-between">
-                <span class="text-teal-200">NIDN:</span>
+                <span class="text-blue-200">NIDN:</span>
                 <span class="font-semibold">{{ $lecturer->nidn ?? '-' }}</span>
             </div>
             <div class="flex justify-between">
-                <span class="text-teal-200">Email:</span>
+                <span class="text-blue-200">Email:</span>
                 <span class="font-semibold">{{ auth()->user()->email }}</span>
             </div>
             <div class="flex justify-between">
-                <span class="text-teal-200">Kontak:</span>
+                <span class="text-blue-200">Kontak:</span>
                 <span class="font-semibold">{{ $lecturer->phone ?? '-' }}</span>
             </div>
         </div>
@@ -37,7 +37,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <!-- Kelas Diampu -->
         <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-chalkboard-user"></i>
             </div>
             <div>
@@ -48,7 +48,7 @@
 
         <!-- Mahasiswa Diajar -->
         <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-user-graduate"></i>
             </div>
             <div>
@@ -71,13 +71,13 @@
 
         <!-- Jadwal Hari Ini -->
         <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+            <div class="w-12 h-12 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-calendar-check"></i>
             </div>
             <div>
                 <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Jadwal Hari Ini</p>
                 <h3 class="text-2xl font-bold text-slate-800">{{ $stats['today_schedules_count'] }}</h3>
-                <span class="text-[11px] text-emerald-600 font-medium">{{ $today }}</span>
+                <span class="text-[11px] text-sky-700 font-semibold">{{ $today }}</span>
             </div>
         </div>
     </div>
@@ -88,10 +88,10 @@
         <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
             <div class="flex items-center justify-between mb-5">
                 <div class="flex items-center gap-2">
-                    <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <div class="w-2.5 h-2.5 bg-blue-600 rounded-full animate-pulse"></div>
                     <h3 class="font-bold text-slate-800 text-base">Jadwal Mengajar Hari Ini ({{ $today }})</h3>
                 </div>
-                <a href="{{ route('dosen.schedules.index') }}" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
+                <a href="{{ route('dosen.schedules.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">
                     Lihat Semua <i class="fa-solid fa-arrow-right ml-1"></i>
                 </a>
             </div>
@@ -107,11 +107,11 @@
             @else
                 <div class="space-y-3">
                     @foreach ($todaySchedules as $schedule)
-                        <div class="p-4 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-emerald-50/40 hover:border-emerald-200 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="p-4 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-blue-50/40 hover:border-blue-200 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div class="flex items-start gap-3">
-                                <div class="w-12 h-12 rounded-lg bg-teal-100 text-teal-800 font-bold flex flex-col items-center justify-center text-xs flex-shrink-0">
+                                <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-900 font-bold flex flex-col items-center justify-center text-xs flex-shrink-0">
                                     <span>{{ $schedule->start_time }}</span>
-                                    <span class="text-[10px] text-teal-600 font-normal">{{ $schedule->end_time }}</span>
+                                    <span class="text-[10px] text-blue-600 font-normal">{{ $schedule->end_time }}</span>
                                 </div>
                                 <div>
                                     <h4 class="font-bold text-slate-800 text-sm">
@@ -127,7 +127,7 @@
                                 </div>
                             </div>
                             <div class="flex sm:flex-col items-center sm:items-end justify-between gap-2 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200">
-                                <a href="{{ route('dosen.classes.show', $schedule->courseClass) }}" class="text-xs bg-white hover:bg-teal-50 text-teal-700 border border-teal-200 font-semibold px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1 shadow-sm">
+                                <a href="{{ route('dosen.classes.show', $schedule->courseClass) }}" class="text-xs bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-semibold px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1 shadow-sm">
                                     <i class="fa-solid fa-users"></i> Peserta
                                 </a>
                             </div>
@@ -141,7 +141,7 @@
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col">
             <div class="flex items-center justify-between mb-5">
                 <h3 class="font-bold text-slate-800 text-base">Kelas Diampu</h3>
-                <a href="{{ route('dosen.classes.index') }}" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
+                <a href="{{ route('dosen.classes.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">
                     Semua ({{ $stats['total_classes'] }})
                 </a>
             </div>
@@ -164,10 +164,10 @@
                                 </span>
                             </div>
                             <div class="mt-3 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-xs">
-                                <a href="{{ route('dosen.classes.show', $item) }}" class="text-teal-700 hover:text-teal-900 font-semibold inline-flex items-center gap-1">
+                                <a href="{{ route('dosen.classes.show', $item) }}" class="text-blue-700 hover:text-blue-900 font-semibold inline-flex items-center gap-1">
                                     <i class="fa-solid fa-list-check"></i> KRS ({{ $item->pending_count }} baru)
                                 </a>
-                                <a href="{{ route('dosen.grades.edit', $item) }}" class="text-emerald-700 hover:text-emerald-900 font-semibold inline-flex items-center gap-1">
+                                <a href="{{ route('dosen.grades.edit', $item) }}" class="text-indigo-700 hover:text-indigo-900 font-semibold inline-flex items-center gap-1">
                                     <i class="fa-solid fa-star"></i> Nilai
                                 </a>
                             </div>

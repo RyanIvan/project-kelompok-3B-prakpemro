@@ -13,10 +13,10 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
                 <div class="flex items-center gap-2 mb-2">
-                    <span class="text-xs font-mono font-bold px-2.5 py-0.5 bg-teal-100 text-teal-800 rounded">
+                    <span class="text-xs font-mono font-bold px-2.5 py-0.5 bg-blue-100 text-blue-900 rounded">
                         {{ $courseClass->course?->code ?? '-' }}
                     </span>
-                    <span class="text-xs font-bold px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full">
+                    <span class="text-xs font-bold px-2.5 py-0.5 bg-indigo-100 text-indigo-900 rounded-full">
                         Kelas {{ $courseClass->name }}
                     </span>
                     <span class="text-xs text-slate-500">
@@ -30,7 +30,7 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <a href="{{ route('dosen.grades.edit', $courseClass) }}" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2.5 rounded-xl shadow-sm transition inline-flex items-center gap-2">
+                <a href="{{ route('dosen.grades.edit', $courseClass) }}" class="text-xs bg-blue-900 hover:bg-blue-800 text-white font-semibold px-4 py-2.5 rounded-xl shadow-sm transition inline-flex items-center gap-2">
                     <i class="fa-solid fa-star"></i> Input & Kelola Nilai
                 </a>
             </div>
@@ -42,7 +42,7 @@
         <!-- Tabs -->
         <div class="flex flex-wrap items-center gap-2">
             <a href="{{ route('dosen.classes.show', $courseClass) }}"
-               class="px-3.5 py-2 rounded-xl text-xs font-semibold transition border {{ !request('status') ? 'bg-teal-900 text-white border-teal-900' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' }}">
+               class="px-3.5 py-2 rounded-xl text-xs font-semibold transition border {{ !request('status') ? 'bg-blue-950 text-white border-blue-950' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' }}">
                 Semua ({{ array_sum($statusCounts->toArray()) }})
             </a>
             <a href="{{ route('dosen.classes.show', [$courseClass, 'status' => 'Pending']) }}"
@@ -50,7 +50,7 @@
                 <i class="fa-solid fa-clock mr-1"></i> Menunggu Validasi ({{ $statusCounts['Pending'] ?? 0 }})
             </a>
             <a href="{{ route('dosen.classes.show', [$courseClass, 'status' => 'Approved']) }}"
-               class="px-3.5 py-2 rounded-xl text-xs font-semibold transition border {{ request('status') === 'Approved' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-emerald-700 border-slate-200 hover:bg-emerald-50' }}">
+               class="px-3.5 py-2 rounded-xl text-xs font-semibold transition border {{ request('status') === 'Approved' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-slate-200 hover:bg-blue-50' }}">
                 <i class="fa-solid fa-circle-check mr-1"></i> Disetujui ({{ $statusCounts['Approved'] ?? 0 }})
             </a>
             <a href="{{ route('dosen.classes.show', [$courseClass, 'status' => 'Rejected']) }}"
@@ -66,7 +66,7 @@
             @endif
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari NIM atau Nama..." class="text-xs pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm w-56">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari NIM atau Nama..." class="text-xs pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm w-56">
             </div>
             <button type="submit" class="text-xs bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-lg font-semibold transition">
                 Cari
@@ -124,7 +124,7 @@
                                 </td>
                                 <td class="px-5 py-4 text-center">
                                     @if ($enrollment->status === 'Approved')
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-semibold">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-semibold">
                                             <i class="fa-solid fa-circle-check text-[10px]"></i> Disetujui
                                         </span>
                                     @elseif ($enrollment->status === 'Pending')
@@ -152,7 +152,7 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <input type="hidden" name="status" value="Approved">
-                                                <button type="submit" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 font-semibold px-2.5 py-1.5 rounded-lg transition inline-flex items-center gap-1" title="Setujui KRS">
+                                                <button type="submit" class="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 font-semibold px-2.5 py-1.5 rounded-lg transition inline-flex items-center gap-1" title="Setujui KRS">
                                                     <i class="fa-solid fa-check"></i> Setujui
                                                 </button>
                                             </form>
